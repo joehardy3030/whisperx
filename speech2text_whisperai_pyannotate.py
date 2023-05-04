@@ -265,16 +265,31 @@ def get_gpu_memory_usage():
         return 0
 
 
+def save_to_file(results_segments_w_speakers: List[Dict[str, Any]], output_file: str) -> None:
+    """
+    Save the transcription and diarization results to a text file.
+
+    Args:
+        results_segments_w_speakers: A list of dictionaries representing each segment of the transcript, including
+        the start and end times, the spoken text, and the speaker ID.
+        output_file: The path of the output text file.
+    """
+    with open(output_file, "w") as f:
+        for i, segment in enumerate(results_segments_w_speakers):
+            f.write(f"{segment['speaker']} ({segment['start']:.2f}): {segment['text']}\n")
+            f.write("\n")
+
+
 if __name__ == "__main__":
-    model_names = ["base", "medium", "large"]
-    devices = ["cpu", "cuda"]
+    model_names = ["medium"]
+    devices = ["cuda"]
     hf_token = os.environ["HUGGINGFACE_TOKEN"]
     language_code = "en"
 
-    convert_to_wav("AUDIO-2023-04-15-13-04-47.m4a")
+    convert_to_wav("2023-2-24-Grace-R-Life.flac")
 
     audio_file = (
-        "AUDIO-2023-04-15-13-04-47.wav"
+        "2023-2-24-Grace-R-Life.wav"
     )
     results = {}
 
@@ -303,9 +318,14 @@ if __name__ == "__main__":
             print(f"Memory usage for {model_name} on {device}: {results[model_name][device]['memory_usage']:.2f}GB")
             print("\n")
 
+    output_file = "transcription_results.txt"
+    save_to_file(results_segments_w_speakers, output_file)
+    print(f"Transcription and diarization results saved to {output_file}")
+
     plot_results(results)
 
     results = {}
+
 
 
 
